@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+
+	<class name="jason.self.fms.service.CurrentVersion" table="current_version">
+		<id name="ID" type="string" column="id" />
+		<property name="VersionID" column="version_id" index="current_version_idx2"/>
+		<property name="IsUserCreated" column="is_user_created"/>
+		<property name="Service" column="service"/>
+	</class>
+
+</hibernate-mapping>

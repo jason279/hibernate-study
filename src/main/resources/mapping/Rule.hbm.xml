@@ -1,0 +1,91 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping default-access="field">
+
+	<class name="jason.self.fms.service.rule.rule.Rule" table="rule_rule"
+		lazy="false" node="rule">
+		<id name="mVersionID" type="string" column="version_id">
+			<generator class="uuid" />
+		</id>
+		<discriminator column="type" type="string" />
+		<property name="mId" index="rule_rule_id_idx1" column="id" />
+		<property name="mCreatedTimestamp" column="created" />
+		<property name="mName" node="@name" column="name" />
+		<property name="mComments" type="text" node="comments">
+			<column name="comments" length="65535" />
+		</property>
+		<property name="mIsExternal" node="external">
+			<column name="is_external" />
+		</property>
+
+		<property name="mIsUserCreated">
+			<column name="is_user_created" />
+		</property>
+
+		<property name="mTriggerWithoutData">
+			<column name="trigger_without_data" not-null="true" />
+		</property>
+		<property name="mTriggerType" type="jason.self.fms.hibernate.EnumUserType"
+			node="trigger-type">
+			<column name="trigger_type" />
+		</property>
+
+		<component name="mDomainQuery"
+			class="jason.self.fms.service.rule.rule.TopologyQuery" node="jason.self.fms.service.rule.rule.TopologyQuery">
+			<property name="mQueryText" type="text" node="@query-text">
+				<column name="query_text" length="65535" />
+			</property>
+		</component>
+
+		<property name="mCartridgeName">
+			<column name="cartridge_name" />
+		</property>
+
+		<property name="mCartridgeVersion">
+			<column name="cartridge_version" />
+		</property>
+
+		<property name="mDomainName">
+			<column name="domain_name" />
+		</property>
+
+		<property name="actionsSuspendedTill" access="property">
+			<column name="actions_suspended_till" />
+		</property>
+
+		<property name="alarmsSuspendedTill" access="property">
+			<column name="alarms_suspended_till" />
+		</property>
+
+		<property name="mHelp" type="text">
+			<column name="help" length="65535" />
+		</property>
+
+		<property name="mTriggeringEventName">
+			<column name="triggering_event" />
+		</property>
+
+		<property name="triggeringScheduleXML" type="text" access="property">
+			<column name="triggering_schedule" length="65535" />
+		</property>
+
+		<property name="mSuspended">
+			<column name="is_suspended" />
+		</property>
+
+
+		<subclass name="jason.self.fms.service.rule.rule.SimpleRule"
+			discriminator-value="SIMPLE" node="jason.self.fms.service.rule.rule.SimpleRule">
+		</subclass>
+
+		<subclass name="jason.self.fms.service.rule.rule.RuleSeverityFamily"
+			discriminator-value="SEVERITY_FAMILY"
+			node="jason.self.fms.service.rule.rule.RuleSeverityFamily">
+		</subclass>
+	</class>
+
+</hibernate-mapping>

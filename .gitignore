@@ -1,3 +1,9 @@
+# setting folder
+.settings/
+
+# target folder by maven
+target/
+
 # Windows image file caches
 Thumbs.db
 ehthumbs.db
