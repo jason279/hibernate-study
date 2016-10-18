@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping default-access="field">
+
+	<class name="jason.self.fms.service.rule.rule.AbstractFiringStrategy"
+		table="rule_firing_strategy">
+		<id name="mId" type="string" column="id">
+			<generator class="uuid" />
+		</id>
+		<discriminator column="type" type="string" />
+
+		<subclass name="jason.self.fms.service.rule.rule.HitRateFiringStrategy"
+			discriminator-value="HIT_RATE">
+			<property name="mMonitorWindowSize" column="monitor_window_size" />
+			<property name="mMonitoredHitThreshold" column="monitor_hit_threshold" />
+		</subclass>
+
+		<subclass
+			name="jason.self.fms.service.rule.rule.InstantiationDelayFiringStrategy"
+			discriminator-value="INSTANTIATION_DELAY">
+			<property name="mDelayPeriod" column="delay_period" />
+		</subclass>
+
+	</class>
+
+</hibernate-mapping>

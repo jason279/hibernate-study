@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 import java.sql.Timestamp;
+import java.util.Collections;
 import java.util.Date;
 import java.util.UUID;
 
@@ -18,6 +19,7 @@ import org.junit.Test;
 
 import jason.self.fms.service.CurrentVersion;
 import jason.self.fms.service.Versionable;
+import jason.self.fms.service.action.ActionHandler;
 import jason.self.fms.service.rule.rule.Rule;
 import jason.self.fms.service.rule.rule.RuleSeverityFamily;
 import jason.self.fms.service.rule.rule.SimpleRule;
@@ -31,12 +33,12 @@ public class TestHibernateHelper {
 	@Before
 	public void setUp() throws Exception {
 		final StandardServiceRegistry registry = new StandardServiceRegistryBuilder().configure().build();
-//		try {
-			sessionFactory = new MetadataSources(registry).buildMetadata().buildSessionFactory();
-//		} catch (Exception e) {
-//			StandardServiceRegistryBuilder.destroy(registry);
-//			System.out.println("set up failed:" + e);
-//		}
+		// try {
+		sessionFactory = new MetadataSources(registry).buildMetadata().buildSessionFactory();
+		// } catch (Exception e) {
+		// StandardServiceRegistryBuilder.destroy(registry);
+		// System.out.println("set up failed:" + e);
+		// }
 	}
 
 	@After
@@ -79,21 +81,23 @@ public class TestHibernateHelper {
 		Rule emailReportSimpleRule = new SimpleRule("877e64db-3193-4ea5-8150-22ead239ee9d");
 		emailReportSimpleRule.setCreatedTimestamp(new Timestamp(new Date().getTime()));
 		emailReportSimpleRule.setName("Email Reports Sample");
-		emailReportSimpleRule.setComments("Emails reports as a PDF attachment. Edit rule condition to filter on report name. Do not forget to set mail.* registry variables.");
+		emailReportSimpleRule.setComments(
+				"Emails reports as a PDF attachment. Edit rule condition to filter on report name. Do not forget to set mail.* registry variables.");
 		emailReportSimpleRule.setIsExternal(true);
 		emailReportSimpleRule.setIsUserCreated(false);
 		emailReportSimpleRule.setTriggerWithoutData(false);
 		emailReportSimpleRule.setEventDriven("ReportGeneratedEvent");
 		emailReportSimpleRule.setCartridgeName("Core-ReportNotification");
 		emailReportSimpleRule.setCartridgeVersion("5.7.5.5");
-		HibernateHelper.persist(OperationVersionable.SAVE_FORCE_MAKE_CURRENT, sessionFactory, emailReportSimpleRule, null, false,
-				Service.RULE);
-		
+		HibernateHelper.persist(OperationVersionable.SAVE_FORCE_MAKE_CURRENT, sessionFactory, emailReportSimpleRule,
+				null, false, Service.RULE);
+
 		Rule freeDatabaseSpaceCheckingSeverityRule = new RuleSeverityFamily();
 		freeDatabaseSpaceCheckingSeverityRule.setId("712ee1de-d002-4e7c-af94-d7cb715dc43c");
 		freeDatabaseSpaceCheckingSeverityRule.setCreatedTimestamp(new Timestamp(new Date().getTime()));
 		freeDatabaseSpaceCheckingSeverityRule.setName("Catalyst Free Database Space Checking");
-		freeDatabaseSpaceCheckingSeverityRule.setComments("Rule to check whether the Oracle tablespaces or SQL Server database still have/has enough free space.");
+		freeDatabaseSpaceCheckingSeverityRule.setComments(
+				"Rule to check whether the Oracle tablespaces or SQL Server database still have/has enough free space.");
 		freeDatabaseSpaceCheckingSeverityRule.setIsExternal(true);
 		freeDatabaseSpaceCheckingSeverityRule.setIsUserCreated(false);
 		freeDatabaseSpaceCheckingSeverityRule.setTriggerWithoutData(true);
@@ -102,8 +106,8 @@ public class TestHibernateHelper {
 		freeDatabaseSpaceCheckingSeverityRule.setDomainQuery(domainQuery);
 		freeDatabaseSpaceCheckingSeverityRule.setCartridgeName("Core-MonitoringPolicy");
 		freeDatabaseSpaceCheckingSeverityRule.setCartridgeVersion("5.7.5.5");
-		HibernateHelper.persist(OperationVersionable.SAVE_FORCE_MAKE_CURRENT, sessionFactory, freeDatabaseSpaceCheckingSeverityRule, null, true,
-				Service.RULE);
+		HibernateHelper.persist(OperationVersionable.SAVE_FORCE_MAKE_CURRENT, sessionFactory,
+				freeDatabaseSpaceCheckingSeverityRule, null, true, Service.RULE);
 	}
 
 	@Test
@@ -112,5 +116,29 @@ public class TestHibernateHelper {
 		rule.setName("test rule");
 		HibernateHelper.persist(OperationVersionable.SAVE_FORCE_MAKE_CURRENT, sessionFactory, rule, null, false,
 				Service.RULE);
+	}
+
+	@Test
+	public void testPersistRuleWithSevirity() {
+		Rule emailReportSimpleRule = new SimpleRule("877e64db-3193-4ea5-8150-22ead239ee9d", "Email Reports Sample",
+				false,
+				"// filter out no-recipients\r\n" + "def recipients = @event.get(\"report/emailRecipients\");\r\n"
+						+ "if (recipients==null||recipients.trim()==\"\")\r\n" + " return false;\r\n" + "\r\n"
+						+ "// filter by name (uncomment 2 lines)\r\n"
+						+ "// if (\"name\" != @event.get(\"report/name\"))\r\n" + "//  return false;\r\n" + "\r\n"
+						+ "// pass through to actions (email)\r\n" + "return true;",
+				Collections.<ActionHandler>emptySet(), Collections.<ActionHandler>emptySet());
+		emailReportSimpleRule.setId("877e64db-3193-4ea5-8150-22ead239ee9d");
+		emailReportSimpleRule.setCreatedTimestamp(new Timestamp(new Date().getTime()));
+		emailReportSimpleRule.setComments(
+				"Emails reports as a PDF attachment. Edit rule condition to filter on report name. Do not forget to set mail.* registry variables.");
+		emailReportSimpleRule.setIsExternal(true);
+		emailReportSimpleRule.setIsUserCreated(false);
+		emailReportSimpleRule.setTriggerWithoutData(false);
+		emailReportSimpleRule.setEventDriven("ReportGeneratedEvent");
+		emailReportSimpleRule.setCartridgeName("Core-ReportNotification");
+		emailReportSimpleRule.setCartridgeVersion("5.7.5.5");
+		HibernateHelper.persist(OperationVersionable.SAVE_FORCE_MAKE_CURRENT, sessionFactory, emailReportSimpleRule,
+				null, false, Service.RULE);
 	}
 }

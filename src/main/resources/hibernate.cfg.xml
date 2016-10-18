@@ -31,6 +31,8 @@
 		<!-- Using hbm.xml mapping file -->
 		<mapping resource="mapping/CurrentVersion.hbm.xml" />
 		<mapping resource="mapping/Rule.hbm.xml" />
+		<mapping resource="mapping/Severity.hbm.xml" />
+		<mapping resource="mapping/FiringStrategy.hbm.xml" />
 
 	</session-factory>
 

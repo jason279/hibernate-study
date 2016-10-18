@@ -7,18 +7,18 @@
 <hibernate-mapping default-access="field">
 
 	<class name="jason.self.fms.service.rule.rule.Rule" table="rule_rule"
-		lazy="false" node="rule">
+		lazy="false">
 		<id name="mVersionID" type="string" column="version_id">
 			<generator class="uuid" />
 		</id>
 		<discriminator column="type" type="string" />
 		<property name="mId" index="rule_rule_id_idx1" column="id" />
 		<property name="mCreatedTimestamp" column="created" />
-		<property name="mName" node="@name" column="name" />
-		<property name="mComments" type="text" node="comments">
+		<property name="mName" column="name" />
+		<property name="mComments" type="text">
 			<column name="comments" length="65535" />
 		</property>
-		<property name="mIsExternal" node="external">
+		<property name="mIsExternal">
 			<column name="is_external" />
 		</property>
 
@@ -29,14 +29,13 @@
 		<property name="mTriggerWithoutData">
 			<column name="trigger_without_data" not-null="true" />
 		</property>
-		<property name="mTriggerType" type="jason.self.fms.hibernate.EnumUserType"
-			node="trigger-type">
+		<property name="mTriggerType" type="jason.self.fms.hibernate.EnumUserType">
 			<column name="trigger_type" />
 		</property>
 
 		<component name="mDomainQuery"
-			class="jason.self.fms.service.rule.rule.TopologyQuery" node="jason.self.fms.service.rule.rule.TopologyQuery">
-			<property name="mQueryText" type="text" node="@query-text">
+			class="jason.self.fms.service.rule.rule.TopologyQuery">
+			<property name="mQueryText" type="text">
 				<column name="query_text" length="65535" />
 			</property>
 		</component>
@@ -77,14 +76,46 @@
 			<column name="is_suspended" />
 		</property>
 
+		<map name="severities" access="property" lazy="false" cascade="save-update"
+			fetch="subselect">
+			<key column="rule_version_id" />
+			<index column="severity_level" type="integer" />
+			<one-to-many class="jason.self.fms.service.rule.rule.Severity" />
+		</map>
+
+		<set name="firingStrategies" cascade="all" lazy="false" access="property"
+			fetch="subselect">
+			<key column="rule_version_id" />
+			<one-to-many
+				class="jason.self.fms.service.rule.rule.AbstractFiringStrategy" />
+		</set>
+
+		<set name="expressions" access="property" lazy="false" fetch="subselect">
+			<key column="rule_version_id" />
+			<composite-element
+				class="jason.self.fms.service.rule.expression.Expression">
+				<property name="mName" column="name" />
+				<property name="mText" column="text" type="text" length="65535" />
+			</composite-element>
+		</set>
+
+		<set name="messages" access="property" lazy="false" fetch="subselect">
+			<key column="rule_version_id" />
+			<composite-element
+				class="jason.self.fms.service.rule.expression.Message">
+				<property name="mName" column="name" />
+				<property name="mText" column="text" type="text" length="65535" />
+			</composite-element>
+		</set>
 
 		<subclass name="jason.self.fms.service.rule.rule.SimpleRule"
-			discriminator-value="SIMPLE" node="jason.self.fms.service.rule.rule.SimpleRule">
+			discriminator-value="SIMPLE">
+
 		</subclass>
 
 		<subclass name="jason.self.fms.service.rule.rule.RuleSeverityFamily"
-			discriminator-value="SEVERITY_FAMILY"
-			node="jason.self.fms.service.rule.rule.RuleSeverityFamily">
+			discriminator-value="SEVERITY_FAMILY">
+
 		</subclass>
 	</class>
 

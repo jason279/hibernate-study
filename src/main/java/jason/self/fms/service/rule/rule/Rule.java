@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.jboss.logging.Logger;
@@ -60,6 +61,7 @@ public abstract class Rule implements Versionable {
 	protected boolean mIsTransient;
 	protected transient ScheduleServiceMBean mScheduleService;
 	private ReentrantReadWriteLock mClearingLock = new ReentrantReadWriteLock();
+	protected boolean mEditable = true;
 
 	protected Rule() {
 	}
@@ -67,8 +69,19 @@ public abstract class Rule implements Versionable {
 	protected Rule(String id) {
 		mId = id;
 	}
-	
-	//abstract method
+
+	protected Rule(String id, String name, boolean isTransient) {
+
+		if (id == null && isTransient) {
+			mId = UUID.randomUUID().toString();
+		}
+
+		mName = name;
+		mIsTransient = isTransient;
+		mEditable = true;
+	}
+
+	// abstract method
 	public abstract String getTypeName();
 
 	public Set<String> getBlackOutScheduleIds() {
@@ -372,9 +385,9 @@ public abstract class Rule implements Versionable {
 			return null;
 		}
 	}
+
 	protected void setTriggeringScheduleXML(String xml) throws JiBXException {
-		mTriggeringSchedule = (xml == null) ? null : (Schedule) JibxHelper
-				.unmarshalXML(xml, Schedule.class);
+		mTriggeringSchedule = (xml == null) ? null : (Schedule) JibxHelper.unmarshalXML(xml, Schedule.class);
 	}
 
 	public enum TriggerType {
@@ -401,6 +414,14 @@ public abstract class Rule implements Versionable {
 		}
 
 		mScheduleService = scheduleService;
+	}
+
+	public void makeEditable() {
+		mEditable = true;
+	}
+
+	public void makeUnEditable() {
+		mEditable = false;
 	}
 
 	// other methods in Versionable
