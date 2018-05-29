@@ -1,3 +1,7 @@
+# eclipse related files
+.classpath
+.project
+
 # setting folder
 .settings/
 
