@@ -11,8 +11,9 @@
 
 		<provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
 
-		<!-- <class>self.jason.study.hibernate.entity.Book</class>
- -->
+		<!-- class element can be omitted -->
+		<class>self.jason.study.hibernate.bootstrap.jpa.application.entity.Book</class>
+
 		<properties>
 			<property name="hibernate.dialect"
 				value="org.hibernate.dialect.MySQL5InnoDBDialect" />

@@ -5,8 +5,7 @@ import javax.persistence.Id;
 
 @Entity
 public class Book {
-
-    @Id
+	@Id
     private Long id;
 
     private String title;
